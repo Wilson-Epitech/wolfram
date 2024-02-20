@@ -5,9 +5,9 @@
 ## Makefile
 ##
 
-CC	= stack build
-BINARY_PATH	=	$(shell stack path --local-install-root)
-NAME	= 	wolfram
+CC = stack build
+BINARY_PATH	= $(shell stack path --local-install-root)
+NAME = wolfram
 
 all:
 	$(CC)

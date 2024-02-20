@@ -1,44 +1,92 @@
-module Main (main) where
+--
+-- WOLFRAM PROJECT, 2024
+-- Epitech
+-- File description:
+-- Main
+--
 
-import Lib
-import System.Environment
+import System.Environment (getArgs)
 
--- data Conf = Rule(Maybe int) | Start | Lines | Window | Move (Maybe int)
+data Conf = Conf {
+    rule :: Maybe Int,
+    start :: Int,
+    nblines :: Maybe Int,
+    window :: Int,
+    move :: Maybe Int
+} deriving Show
 
--- defaultConf :: Conf
--- defaultConf = Conf {
---     Rule = Nothing,
---     Start = 0,
---     Lines = Nothing,
---     Window = 80,
---     Move = Nothing
--- }
+defaultConf :: Conf
+defaultConf = Conf {
+    rule = Nothing,
+    start = 0,
+    nblines = Nothing,
+    window = 80,
+    move = Nothing
+}
 
--- getOpts :: Conf -> [String] -> Maybe Conf
--- getOpts = Conf {
---      Rule = ,
---      Start = ,
---      Lines = ,
---      Window = ,
---      Move = ,
--- }
+getOpts :: Conf -> [String] -> Conf
+getOpts conf [] = conf
+getOpts conf ("--rule":valuerule:rest)
+    = getOpts conf {rule = Just (read valuerule)} rest
+getOpts conf ("--start":valuestart:rest)
+    = getOpts conf {start = read valuestart} rest
+getOpts conf ("--lines":valuelines:rest)
+    = getOpts conf {nblines = Just (read valuelines)} rest
+getOpts conf ("--window":valuewindow:rest)
+    = getOpts conf {window = read valuewindow} rest
+getOpts conf ("--move":valuemove:rest)
+    = getOpts conf {move = Just (read valuemove)} rest
+getOpts conf _ = conf
 
-findCharValue :: Char -> Char -> Char -> Char
-findCharValue c1 c2 c3
-    | c1 == '*' && c2 == '*' && c3 == '*' = ' '  
-    | c1 == '*' && c2 == '*' && c3 == ' ' = ' '  
-    | c1 == '*' && c2 == ' ' && c3 == '*' = ' ' 
-    | c1 == ' ' && c2 == ' ' && c3 == ' ' = ' '
-    | c1 == '*' && c2 == ' ' && c3 == ' ' = '*'
-    | c1 == ' ' && c2 == '*' && c3 == '*' = '*'
-    | otherwise = '*'
+rule30 :: Char -> Char -> Char -> Char
+rule30 '*' '*' '*' = ' '
+rule30 '*' '*' ' ' = ' '
+rule30 '*' ' ' '*' = ' '
+rule30 ' ' ' ' ' ' = ' '
+rule30 '*' ' ' ' ' = '*'
+rule30 ' ' '*' '*' = '*'
+rule30 ' ' '*' ' ' = '*'
+rule30 ' ' ' ' '*' = '*'
+rule30 _ _ _ = ' '
 
-writeFirstLine:: IO()
-writeFirstLine = putStrLn "  *  "
+rule90 :: Char -> Char -> Char -> Char
+rule90 '*' '*' '*' = ' '
+rule90 '*' '*' ' ' = '*'
+rule90 '*' ' ' '*' = ' '
+rule90 '*' ' ' ' ' = '*'
+rule90 ' ' '*' '*' = '*'
+rule90 ' ' '*' ' ' = ' '
+rule90 ' ' ' ' '*' = '*'
+rule90 ' ' ' ' ' ' = ' '
+rule90 _ _ _ = ' '
 
-main :: IO [()]
+rule110 :: Char -> Char -> Char -> Char
+rule110 '*' '*' '*' = ' '
+rule110 '*' '*' ' ' = '*'
+rule110 '*' ' ' '*' = '*'
+rule110 '*' ' ' ' ' = ' '
+rule110 ' ' '*' '*' = '*'
+rule110 ' ' '*' ' ' = '*'
+rule110 ' ' ' ' '*' = '*'
+rule110 ' ' ' ' ' ' = ' '
+rule110 _ _ _ = ' '
+
+algoRule :: String -> String
+algoRule (x:y:z:rest) = rule30 x y z : algoRule (y:z:rest)
+algoRule _ = []
+
+nextLine :: String -> String
+nextLine line = ' ' : algoRule line ++ " "
+
+repeatLines :: String -> Int -> [String]
+repeatLines _ 0 = []
+repeatLines line n = line : repeatLines (nextLine line) (n-1)
+
+main :: IO ()
 main = do
-     writeFirstLine
-     args <- getArgs
-     mapM putStrLn args
-
+    args <- getArgs
+    let conf = getOpts defaultConf args
+    --putStrLn $ show conf
+    let firstLine = "         *          "
+    let lines = repeatLines firstLine 10
+    mapM_ putStrLn lines
