@@ -71,16 +71,18 @@ rule110 ' ' ' ' '*' = '*'
 rule110 ' ' ' ' ' ' = ' '
 rule110 _ _ _ = ' '
 
-algoRule :: String -> String
-algoRule (x:y:z:rest) = rule30 x y z : algoRule (y:z:rest)
-algoRule _ = []
+algoRule :: Maybe Int -> String -> String
+algoRule (Just 30) (x:y:z:rest) = rule30 x y z : algoRule (Just 30) (y:z:rest)
+algoRule (Just 90) (x:y:z:rest) = rule90 x y z : algoRule (Just 90) (y:z:rest)
+algoRule (Just 110) (x:y:z:rest) = rule110 x y z : algoRule (Just 110) (y:z:rest)
+algoRule _ _ = []
 
-nextLine :: String -> String
-nextLine line = ' ' : algoRule line ++ " "
+nextLine ::  Maybe Int -> String -> String
+nextLine valueRule line = ' ' : algoRule valueRule line ++ " "
 
-repeatLines :: String -> Int -> [String]
-repeatLines _ 0 = []
-repeatLines line n = line : repeatLines (nextLine line) (n-1)
+repeatLines ::  Maybe Int -> String -> Int -> [String]
+repeatLines _ _ 0 = []
+repeatLines valueRule line n = line : repeatLines valueRule (nextLine valueRule line) (n-1)
 
 main :: IO ()
 main = do
@@ -88,5 +90,5 @@ main = do
     let conf = getOpts defaultConf args
     --putStrLn $ show conf
     let firstLine = "         *          "
-    let lines = repeatLines firstLine 10
+    let lines = repeatLines (rule conf) firstLine 10
     mapM_ putStrLn lines
