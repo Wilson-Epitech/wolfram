@@ -6,6 +6,7 @@
 --
 
 import System.Environment (getArgs)
+import System.Exit (exitWith, ExitCode(ExitFailure))
 
 data Conf = Conf {
     rule :: Maybe Int,
@@ -72,23 +73,36 @@ rule110 ' ' ' ' ' ' = ' '
 rule110 _ _ _ = ' '
 
 algoRule :: Maybe Int -> String -> String
-algoRule (Just 30) (x:y:z:rest) = rule30 x y z : algoRule (Just 30) (y:z:rest)
-algoRule (Just 90) (x:y:z:rest) = rule90 x y z : algoRule (Just 90) (y:z:rest)
-algoRule (Just 110) (x:y:z:rest) = rule110 x y z : algoRule (Just 110) (y:z:rest)
+algoRule (Just 30) (x:y:z:rest)
+    = rule30 x y z : algoRule (Just 30) (y:z:rest)
+algoRule (Just 90) (x:y:z:rest)
+    = rule90 x y z : algoRule (Just 90) (y:z:rest)
+algoRule (Just 110) (x:y:z:rest)
+    = rule110 x y z : algoRule (Just 110) (y:z:rest)
 algoRule _ _ = []
 
 nextLine ::  Maybe Int -> String -> String
 nextLine valueRule line = ' ' : algoRule valueRule line ++ " "
 
-repeatLines ::  Maybe Int -> String -> Int -> [String]
-repeatLines _ _ 0 = []
-repeatLines valueRule line n = line : repeatLines valueRule (nextLine valueRule line) (n-1)
+repeatLines ::  Maybe Int -> String -> Maybe Int -> [String]
+repeatLines _ _ (Just 0) = []
+repeatLines valueRule line (Just n) =
+    line : repeatLines valueRule (nextLine valueRule line) (Just (n-1))
+
+createLine :: Int -> String
+createLine wdwsize =
+    replicate (wdwsize `div` 2 - 1) ' '
+    ++ "*" ++ replicate (wdwsize `div` 2 - 1) ' '
 
 main :: IO ()
 main = do
     args <- getArgs
-    let conf = getOpts defaultConf args
-    --putStrLn $ show conf
-    let firstLine = "         *          "
-    let lines = repeatLines (rule conf) firstLine 10
-    mapM_ putStrLn lines
+    if null args
+        then do
+        exitWith (ExitFailure 84)
+        else do
+            let conf = getOpts defaultConf args
+            --putStrLn $ show conf
+            let firstLine = createLine (window conf)
+            let lines = repeatLines (rule conf) firstLine (nblines conf)
+            mapM_ putStrLn lines
