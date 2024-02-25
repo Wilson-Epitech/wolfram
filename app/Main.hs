@@ -1,9 +1,9 @@
---
+{-
 -- WOLFRAM PROJECT, 2024
 -- Epitech
 -- File description:
 -- Main
---
+-}
 
 import System.Environment (getArgs)
 import System.Exit (exitWith, ExitCode(ExitFailure))
@@ -84,10 +84,13 @@ algoRule _ _ = []
 nextLine ::  Maybe Int -> String -> String
 nextLine valueRule line = ' ' : algoRule valueRule line ++ " "
 
-repeatLines ::  Maybe Int -> String -> Maybe Int -> [String]
-repeatLines _ _ (Just 0) = []
-repeatLines valueRule line (Just n) =
-    line : repeatLines valueRule (nextLine valueRule line) (Just (n-1))
+repeatLines ::  Maybe Int -> String -> Maybe Int -> Int -> [String]
+repeatLines _ _ (Just 0) _ = []
+repeatLines valueRule line (Just n) startvalue
+    | startvalue > 0  = repeatLines valueRule
+        (nextLine valueRule line) (Just (n)) (startvalue - 1)
+    | otherwise  = line : repeatLines valueRule
+        (nextLine valueRule line) (Just (n-1)) 0
 
 createLineOdd :: Int -> String
 createLineOdd wdwsize =
@@ -97,19 +100,17 @@ createLineOdd wdwsize =
 createLinePair :: Int -> String
 createLinePair wdwsize =
     replicate (wdwsize `div` 2) ' '
-    ++ "*" ++ replicate (wdwsize `div` 2 - 1) ' '
+    ++ "*" ++ replicate ((wdwsize)`div` 2 - 1) ' '
 
 main :: IO ()
 main = do
     args <- getArgs
     if null args
-        then do
-        exitWith (ExitFailure 84)
-        else do
-            let conf = getOpts defaultConf args
-            --putStrLn $ show conf
-            let firstLine = if window conf `mod` 2 == 0
-                then createLinePair (window conf)
-                else createLineOdd (window conf)
-            let line = repeatLines (rule conf) firstLine (nblines conf)
-            mapM_ putStrLn line
+        then exitWith (ExitFailure 84)
+        else let conf = getOpts defaultConf args
+                 firstLine = if window conf `mod` 2 == 0
+                                then createLinePair (window conf)
+                                else createLineOdd (window conf)
+                 line = repeatLines (rule conf) firstLine
+                    (nblines conf) (start conf)
+             in mapM_ putStrLn line
