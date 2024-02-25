@@ -89,9 +89,14 @@ repeatLines _ _ (Just 0) = []
 repeatLines valueRule line (Just n) =
     line : repeatLines valueRule (nextLine valueRule line) (Just (n-1))
 
-createLine :: Int -> String
-createLine wdwsize =
-    replicate (wdwsize `div` 2 - 1) ' '
+createLineOdd :: Int -> String
+createLineOdd wdwsize =
+    replicate ((wdwsize - 1) `div` 2) ' '
+    ++ "*" ++ replicate ((wdwsize - 1) `div` 2) ' '
+
+createLinePair :: Int -> String
+createLinePair wdwsize =
+    replicate (wdwsize `div` 2) ' '
     ++ "*" ++ replicate (wdwsize `div` 2 - 1) ' '
 
 main :: IO ()
@@ -103,6 +108,8 @@ main = do
         else do
             let conf = getOpts defaultConf args
             --putStrLn $ show conf
-            let firstLine = createLine (window conf)
-            let lines = repeatLines (rule conf) firstLine (nblines conf)
-            mapM_ putStrLn lines
+            let firstLine = if window conf `mod` 2 == 0
+                then createLinePair (window conf)
+                else createLineOdd (window conf)
+            let line = repeatLines (rule conf) firstLine (nblines conf)
+            mapM_ putStrLn line
