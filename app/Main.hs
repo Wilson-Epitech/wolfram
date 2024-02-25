@@ -102,15 +102,19 @@ createLinePair wdwsize =
     replicate (wdwsize `div` 2) ' '
     ++ "*" ++ replicate (wdwsize`div` 2 - 1) ' '
 
+getFirstLine :: Conf -> String
+getFirstLine conf =
+    if window conf `mod` 2 == 0
+        then createLinePair (window conf)
+        else createLineOdd (window conf)
+
 main :: IO ()
 main = do
     args <- getArgs
     if null args
         then exitWith (ExitFailure 84)
         else let conf = getOpts defaultConf args
-                 firstLine = if window conf `mod` 2 == 0
-                                then createLinePair (window conf)
-                                else createLineOdd (window conf)
-                 line = repeatLines (rule conf) firstLine
-                    (nblines conf) (start conf)
+                 firstLine = getFirstLine conf
+                 line = repeatLines (rule conf)
+                    firstLine (nblines conf) (start conf)
              in mapM_ putStrLn line
