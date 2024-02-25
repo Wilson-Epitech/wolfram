@@ -100,7 +100,7 @@ createLineOdd wdwsize =
 createLinePair :: Int -> String
 createLinePair wdwsize =
     replicate (wdwsize `div` 2) ' '
-    ++ "*" ++ replicate ((wdwsize)`div` 2 - 1) ' '
+    ++ "*" ++ replicate (wdwsize`div` 2 - 1) ' '
 
 main :: IO ()
 main = do
