@@ -14,7 +14,7 @@
 
 <p align="center"><img src=".github/assets/wolfram.gif" alt="Wolfram" width="820"/></p>
 
-## En deux mots
+## Le projet en quelques mots
 
 Mon premier projet en Haskell. Chaque ligne est calculée à partir de la précédente selon une règle de 0 à 255. Quelques règles donnent des motifs étonnants : la 30 est chaotique, la 90 dessine un triangle de Sierpiński, et la 110 est Turing-complète.
 
@@ -24,10 +24,6 @@ Mon premier projet en Haskell. Chaque ligne est calculée à partir de la préc�
 - Options `--rule`, `--start`, `--lines`, `--window`, `--move`
 - Générations calculées paresseusement : la liste est infinie, on n'affiche que ce qu'on demande
 - Gestion des erreurs d'arguments avec code de sortie 84
-
-## Sous le capot
-
-La règle est convertie en 8 bits : chaque voisinage de 3 cellules donne l'état suivant. Les générations forment une liste infinie, et l'affichage ne prend que la fenêtre et le nombre de lignes demandés.
 
 ## Lancer le projet
 
